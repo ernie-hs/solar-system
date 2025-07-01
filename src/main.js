@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { ArcballControls } from "three/examples/jsm/Addons.js";
-import { planets, comets, kuipers } from "./planets";
+import { planets, comets, kuipers } from "./bodies";
 import { ellipse, degToRad } from "./math";
 
 function orbit(props, color) {

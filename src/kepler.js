@@ -1,36 +1,49 @@
-function isClose(a, b, rel_tol = 1e-8, abs_tol = 1e-8) {
-    return Math.abs(a - b) <= Math.max(rel_tol * Math.max(Math.abs(a), Math.abs(b)), abs_tol);
+import { degToRad, rotateX, rotateY } from "./math";
+import { newtonRaphson } from "./newton";
+
+function rt(r, theta) {
+    return [r * Math.cos(theta), 0.0, r * Math.sin(theta)]
 }
 
-function newtonRaphson(x, fn, dfn, r = 0) {
-    const y = fn(x);
-    const x2 = x - y / dfn(x);
-    const y2 = fn(x2);
-    if (isClose(y2, y) || r > 8) return x2;
-    return newtonRaphson(x2, fn, dfn, r + 1);
+function orbit(props) {
+    const A = props.semiMajorAxis * (1.0 - Math.pow(props.eccentricity, 2));
+    return {
+        p: function (theta) {
+            const r = A / (1.0 + props.eccentricity * Math.cos(theta));
+            const c = rt(r, theta);
+            return rotateY(rotateX(rotateY(c, degToRad(props.argumentOfPeriapsis)),
+                degToRad(props.inclination)),
+                degToRad(props.longitudeOfAscendingNode));
+        },
+        o: function* (theta0, thetaN, thetaS) {
+            for (let theta = theta0; theta < thetaN; theta += thetaS)
+                yield this.p(theta);
+        },
+
+    };
 }
 
-function kepler(epsilon, M) {
+function kepler(e, M) {
     function f(E) {
-        return E - epsilon * Math.sin(E) - M;
+        return E - e * Math.sin(E) - M;
     };
 
     function df(E) {
-        return 1.0 - epsilon * Math.cos(E);
+        return 1.0 - e * Math.cos(E);
     };
 
     function theta(E) {
-        const theta = 2.0 * Math.atan(Math.sqrt((1.0 + epsilon) / (1.0 - epsilon)) * Math.tan(E / 2.0));
+        const theta = 2.0 * Math.atan(Math.sqrt((1.0 + e) / (1.0 - e)) * Math.tan(E / 2.0));
         return theta < 0 ? (2.0 * Math.PI) + theta : theta;
     }
 
     return {
         M: M,
 
-        epsilon: epsilon,
+        e: e,
 
         trueAnomoly: theta(newtonRaphson(Math.PI, f, df))
     };
 }
 
-export { kepler };
+export { kepler, orbit };

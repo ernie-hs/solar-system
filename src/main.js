@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { ArcballControls } from "three/examples/jsm/Addons.js";
+
 import { system } from "./bodies";
-import { orbit, degToRad } from "./math";
-import { kepler } from "./kepler";
+import { degToRad } from "./math";
+import { orbit, kepler } from "./kepler";
 
 const SPY = 365.0 * 24.0 * 60.0 * 60.0;
 
@@ -19,7 +20,7 @@ function genOrbit(props, color) {
   const bodyGeometry = new THREE.SphereGeometry(0.01);
   const bodyMaterial = new THREE.MeshBasicMaterial({ color: 0x87CEFA });
   const b = new THREE.Mesh(bodyGeometry, bodyMaterial);
-  const p = path.p(degToRad(props.mean_anomaly));
+  const p = path.p(degToRad(props.meanAnomaly));
   b.position.set(...p);
   group.add(b);
   return {
@@ -27,8 +28,8 @@ function genOrbit(props, color) {
     body: b,
     path: path,
     props: props,
-    meanAnomaly: props.mean_anomaly,
-    period: 2.0 * Math.PI / (props.orbital_period * SPY)
+    meanAnomaly: props.meanAnomaly,
+    period: 2.0 * Math.PI / (props.orbitalPeriod * SPY)
   };
 }
 
@@ -38,7 +39,7 @@ const canvas = renderer.domElement;
 const scene = new THREE.Scene();
 const control = new ArcballControls(camera, canvas, scene);
 const clock = new THREE.Clock();
-const rate = 100000000.0;
+const rate = 10000000.0;
 
 window.addEventListener("resize", () => {
   let w = window.innerWidth;

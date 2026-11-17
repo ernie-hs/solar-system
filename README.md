@@ -1,6 +1,5 @@
 # solar-system
 
-![apowogize](https://raw.githubusercontent.com/ernie-hs/jdvance/master/vance.png)
 ![space](https://raw.githubusercontent.com/ernie-hs/solar-system/master/sample.png)
 
 ```sh
